@@ -23,6 +23,7 @@ class NavBar_Admin extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.redAccent,
             ),
+
           ),
           ListTile(
             leading: Icon(Icons.chat_bubble),
