@@ -18,14 +18,14 @@ class Classroom {
 class HomePage extends StatelessWidget {
   final List<Classroom> classrooms = [
     Classroom(
-      name: 'Classroom A',
+      name: 'LHB 110',
       image: 'https://via.placeholder.com/150',
-      description: 'This is a description for Classroom A',
+      description: 'This is a description for LHB 110',
     ),
     Classroom(
-      name: 'Classroom B',
+      name: 'LHB 308',
       image: 'https://via.placeholder.com/150',
-      description: 'This is a description for Classroom B',
+      description: 'This is a description for LHB 308',
     ),
     Classroom(
       name: 'Classroom C',
