@@ -17,6 +17,26 @@ class _ClassroomPageState extends State<ClassroomPage> {
 
   final List<String> _timeSlots = [    '8AM - 9AM',    '9AM - 10AM',    '10AM - 11AM',    '11AM - 12AM'  ];
   void _checkStatus() async {
+    if(_selectedDate == null && _selectedTimeSlot == null){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Please select a date and a time slot.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
     if (_selectedDate == null) {
       showDialog(
         context: context,
@@ -72,6 +92,12 @@ class _ClassroomPageState extends State<ClassroomPage> {
               title: Text('Status'),
               content: Text('Room is available'),
               actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Request'),
+                ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
