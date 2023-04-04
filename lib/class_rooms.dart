@@ -15,8 +15,8 @@ class _ClassroomPageState extends State<ClassroomPage> {
   DateTime? _selectedDate;
   String? _selectedTimeSlot;
 
-  final List<String> _timeSlots = [    '8AM - 9AM',    '9AM - 10AM',    '10AM - 11AM',    '11AM - 12AM'  ];
-  void _checkStatus() async {
+  final List<String> _timeSlots = [    '8AM - 9AM',    '9AM - 10AM',    '10AM - 11AM',    '11AM - 12PM'  ];
+  void _checkStatus() {
     if(_selectedDate == null && _selectedTimeSlot == null){
       showDialog(
         context: context,
@@ -82,51 +82,52 @@ class _ClassroomPageState extends State<ClassroomPage> {
     final day = DateFormat('EEEE').format(_selectedDate!);
     final roomName = widget.classroom.name;
     final timeSlot = _selectedTimeSlot!;
-    final snapshot = await weeklyScheduleRef.child(day).child(roomName).child(timeSlot).onValue.listen((event) {
-      final status = event.snapshot.value;
-      if (status == 0) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Status'),
-              content: Text('Room is available'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Request'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Status'),
-              content: Text('Room is not available'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+    weeklyScheduleRef.child(day).child(roomName).child(timeSlot).onValue.listen((event) {
+        final status = event.snapshot.value;
+        if (status == 0) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Status'),
+                content: Text('Room is available'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Request'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Status'),
+                content: Text('Room is not available'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+
     });
   }
 
@@ -160,7 +161,6 @@ class _ClassroomPageState extends State<ClassroomPage> {
               SizedBox(height: 25),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
                   padding: EdgeInsets.symmetric(vertical: 16,horizontal: 16),
                 ),
                 onPressed: () {
@@ -173,7 +173,7 @@ class _ClassroomPageState extends State<ClassroomPage> {
               SizedBox(height: 25),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
+                  backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(vertical: 16,horizontal: 16),
                 ),
                 onPressed: () {
@@ -184,7 +184,7 @@ class _ClassroomPageState extends State<ClassroomPage> {
               SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
+                  backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(vertical: 16,horizontal: 16),
                 ),
                 onPressed: () {
