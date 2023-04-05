@@ -2,6 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 
 final database = FirebaseDatabase.instance.ref();
 final weeklyScheduleRef = database.child('/Weekly Schedule');
+final bookingsRef = database.child('/Bookings');
+final requestsRef = database.child('/Requests');
 final weeklySchedule = {
   'Monday': {
     'LHB 110': {
