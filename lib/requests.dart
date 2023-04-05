@@ -12,11 +12,10 @@ class _RequestsState extends State<Requests>{
     return Scaffold(
         appBar: AppBar(
           title: const Text("Requests"),
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.redAccent,
         ),
         body: Container(
         )
     );
   }
-
 }

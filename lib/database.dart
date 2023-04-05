@@ -4,6 +4,8 @@ final database = FirebaseDatabase.instance.ref();
 final bookingsRef = database.child('/Bookings');
 final requestsRef = database.child('/Requests');
 final weeklyScheduleRef = database.child('/Weekly Schedule');
+final bookingsRef = database.child('/Bookings');
+final requestsRef = database.child('/Requests');
 final weeklySchedule = {
   'Monday': {
     'LHB 110': {
