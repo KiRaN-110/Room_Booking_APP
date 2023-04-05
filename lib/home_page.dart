@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/nav_bar.dart';
+import 'database.dart';
 
 import 'class_rooms.dart';
 
@@ -42,7 +43,6 @@ class HomePage extends StatelessWidget {
       image: 'https://via.placeholder.com/150',
       description: 'This is a description for Classroom E',
     ),
-
   ];
 
   @override
