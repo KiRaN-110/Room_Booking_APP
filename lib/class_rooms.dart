@@ -82,10 +82,11 @@ class _ClassroomPageState extends State<ClassroomPage> {
     }
     final user_mail = FirebaseAuth.instance.currentUser!.email;
     final date = DateFormat('dd-MM-yyyy').format(_selectedDate!);
+    final enc_date = encodeDate(date);
     final day = DateFormat('EEEE').format(_selectedDate!);
     final roomName = widget.classroom.name;
     final timeSlot = _selectedTimeSlot!;
-    final bookingsSnapshot = await bookingsRef.child(date).child(roomName).child(timeSlot).once();
+    final bookingsSnapshot = await bookingsRef.child(enc_date).child(roomName).child(timeSlot).once();
     if (bookingsSnapshot.snapshot.value == null) {
       // If selected details is not in Bookings database,
       // Check in Weekly Schedule
@@ -284,6 +285,10 @@ class _ClassroomPageState extends State<ClassroomPage> {
 String encodeEmail(String email) {
   final enc_email = email.replaceAll('.', '-');
   return enc_email;
+}
+String encodeDate (String date) {
+  final enc_date = date.replaceAll('/', '-');
+  return enc_date;
 }
 
 Future<void> createRequest(DateTime selectedDate, String roomName, String timeSlot, String email) async {
