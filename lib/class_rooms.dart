@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'database.dart';
 import 'home_page.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
 
 class ClassroomPage extends StatefulWidget {
   final Classroom classroom;
@@ -15,7 +17,7 @@ class _ClassroomPageState extends State<ClassroomPage> {
   DateTime? _selectedDate;
   String? _selectedTimeSlot;
 
-  final List<String> _timeSlots = [    '8AM - 9AM',    '9AM - 10AM',    '10AM - 11AM',    '11AM - 12AM'  ];
+  final List<String> _timeSlots = [    '8AM - 9AM',    '9AM - 10AM',    '10AM - 11AM',    '11AM - 12PM'  ];
   void _checkStatus() async {
     if(_selectedDate == null && _selectedTimeSlot == null){
       showDialog(
@@ -78,12 +80,18 @@ class _ClassroomPageState extends State<ClassroomPage> {
       );
       return;
     }
-
+    final user_mail = FirebaseAuth.instance.currentUser!.email;
+    final date = DateFormat('dd/MM/yyyy').format(_selectedDate!);
     final day = DateFormat('EEEE').format(_selectedDate!);
+    final enc_date = encodeDate(date);
     final roomName = widget.classroom.name;
     final timeSlot = _selectedTimeSlot!;
-    final snapshot = await weeklyScheduleRef.child(day).child(roomName).child(timeSlot).onValue.listen((event) {
-      final status = event.snapshot.value;
+    final bookingsSnapshot = await bookingsRef.child(enc_date).child(roomName).child(timeSlot).once();
+    if (bookingsSnapshot.snapshot.value == null) {
+      // If selected details is not in Bookings database,
+      // Check in Weekly Schedule
+      final snapshot = await weeklyScheduleRef.child(day).child(roomName).child(timeSlot).once();
+      final status = snapshot.snapshot.value;
       if (status == 0) {
         showDialog(
           context: context,
@@ -93,7 +101,8 @@ class _ClassroomPageState extends State<ClassroomPage> {
               content: Text('Room is available'),
               actions: [
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    await createRequest(_selectedDate!, widget.classroom.name, _selectedTimeSlot!, user_mail!);
                     Navigator.of(context).pop();
                   },
                   child: Text('Request'),
@@ -127,7 +136,27 @@ class _ClassroomPageState extends State<ClassroomPage> {
           },
         );
       }
-    });
+    } else {
+      // If selected details are in Bookings database,
+      // Show that room is not available
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Status'),
+            content: Text('Room is not available'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
 
@@ -251,4 +280,20 @@ class _ClassroomPageState extends State<ClassroomPage> {
       });
     }
   }
+}
+
+String encodeEmail(String email) {
+  final enc_email = email.replaceAll('.', '-');
+  return enc_email;
+}
+
+String encodeDate (String date) {
+  final enc_date = date.replaceAll('/', '-');
+  return enc_date;
+}
+
+Future<void> createRequest(DateTime selectedDate, String roomName, String timeSlot, String email) async {
+  final date = DateFormat('dd-MM-yyyy').format(selectedDate);
+  final encoded_email = encodeEmail(email);
+  await requestsRef.child(date).child(roomName).child(timeSlot).child(encoded_email).set('1');
 }
