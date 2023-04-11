@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'database.dart';
 import 'home_page.dart';
 import 'package:intl/intl.dart';
-import 'dart:convert';
 
 class ClassroomPage extends StatefulWidget {
   final Classroom classroom;
@@ -102,8 +101,8 @@ class _ClassroomPageState extends State<ClassroomPage> {
               actions: [
                 TextButton(
                   onPressed: () async {
-                    await createRequest(_selectedDate!, widget.classroom.name, _selectedTimeSlot!, user_mail!);
-                    Navigator.of(context).pop();
+                    await createRequest(context, _selectedDate!, widget.classroom.name, _selectedTimeSlot!, user_mail!);
+                    // Navigator.of(context).pop();
                   },
                   child: Text('Request'),
                 ),
@@ -292,8 +291,52 @@ String encodeDate (String date) {
   return enc_date;
 }
 
-Future<void> createRequest(DateTime selectedDate, String roomName, String timeSlot, String email) async {
+Future<void> createRequest(BuildContext context, DateTime selectedDate, String roomName, String timeSlot, String email) async {
   final date = DateFormat('dd-MM-yyyy').format(selectedDate);
   final encoded_email = encodeEmail(email);
-  await requestsRef.child(date).child(roomName).child(timeSlot).child(encoded_email).set('1');
+  // Check if a request already exists
+  final snapshot = await requestsRef.child(date).child(roomName).child(timeSlot).child(encoded_email).once();
+  if (snapshot.snapshot.value != null) {
+    // Show alert if request already exists
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text('Already requested.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  } else {
+    // Place the request
+    await requestsRef.child(date).child(roomName).child(timeSlot).child(encoded_email).set('1');
+
+    // Show success message
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Success'),
+          content: Text('Request sent.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
+

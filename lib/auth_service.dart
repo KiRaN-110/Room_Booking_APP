@@ -36,7 +36,7 @@ class AuthService {
     if (_googleUser != null) {
       // Check the user's email address
       final email = _googleUser!.email;
-      if (email.endsWith('@iitj.ac.in')) {
+      if (email != null) {
         // Obtain the auth details from the request
         final GoogleSignInAuthentication googleAuth =
         await _googleUser!.authentication;
