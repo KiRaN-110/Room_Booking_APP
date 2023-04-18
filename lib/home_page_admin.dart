@@ -43,12 +43,16 @@ class _HomePage_AdminState extends State<HomePage_Admin>{
                       // Iterate through the email ids
                       if (emailId is Map<dynamic, dynamic>) {
                         emailId.forEach((email, value) {
-                          if (value == '1') {
+                          print(value['Name']);
+                          print(value['TimeStamp']);
+                          if (value['Status'] == '1') {
                             Map<String, dynamic> requestData = {
                               'date': date,
                               'roomName': roomName,
                               'timeSlot': timeSlot,
                               'emailId': email,
+                              'name' : value['Name'],
+                              'timeStamp' : value['TimeStamp'],
                             };
                             requestsList.add(requestData);
                           }
@@ -86,53 +90,78 @@ class _HomePage_AdminState extends State<HomePage_Admin>{
             return ExpansionTile(
               title: Text(requestsList[index]['date']),
               subtitle: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Place timeStamp on the right side
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(requestsList[index]['timeSlot']),
-                        Text(requestsList[index]['roomName']),
-                      ],
-                    ),
-                  ),
-                  Text(requestsList[index]['emailId']),
+                  Text(requestsList[index]['timeSlot']),
+                  Text(requestsList[index]['roomName']),
+                  Text(requestsList[index]['timeStamp']), // Display timeStamp on the right side
                 ],
               ),
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center, // Align name and emailId in center
                   children: [
-                    ElevatedButton(
-                      child: Text('Accept'),
-                      onPressed: () async {
-                        var emailRef = database.child('/Requests').child(requestsList[index]['date']).child(requestsList[index]['roomName']).child(requestsList[index]['timeSlot']);
-                        emailRef.onValue.listen((DatabaseEvent event) {
-                          DataSnapshot snapshot = event.snapshot;
-                          setState(() {
-                            if (snapshot.value != null) {
-                              Map<dynamic, dynamic>? emailList = snapshot.value as Map<dynamic, dynamic>?;
-                              if (emailList != null) {
-                                emailList.forEach((wait_email, value) async {
-                                  if (wait_email != requestsList[index]['emailId']) {
-                                    await emailRef.child(wait_email).set("-1");
-                                  }
-                                });
-                              }
-                            }
-                          });
-                        });
-                        await bookingsRef.child(requestsList[index]['date']).child(requestsList[index]['roomName']).child(requestsList[index]['timeSlot']).set(1);
-                        await requestsRef.child(requestsList[index]['date']).child(requestsList[index]['roomName']).child(requestsList[index]['timeSlot']).child(encodeEmail(requestsList[index]['emailId'])).set('0');
-                        Navigator.of(context).pop();
-                      },
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: 'Name: ',
+                        style: DefaultTextStyle.of(context).style.copyWith(fontWeight: FontWeight.bold), // Set fontWeight to bold
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: requestsList[index]['name'],
+                            style: DefaultTextStyle.of(context).style,
+                          ),
+                        ],
+                      ),
                     ),
-                    ElevatedButton(
-                      child: Text('Reject'),
-                      onPressed: () async {
-                        await requestsRef.child(requestsList[index]['date']).child(requestsList[index]['roomName']).child(requestsList[index]['timeSlot']).child(encodeEmail(requestsList[index]['emailId'])).set('-1');
-                        Navigator.of(context).pop();
-                      },
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: 'Email: ',
+                        style: DefaultTextStyle.of(context).style.copyWith(fontWeight: FontWeight.bold), // Set fontWeight to bold
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: requestsList[index]['emailId'],
+                            style: DefaultTextStyle.of(context).style,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          child: Text('Accept'),
+                          onPressed: () async {
+                            var emailRef = database.child('/Requests').child(requestsList[index]['date']).child(requestsList[index]['roomName']).child(requestsList[index]['timeSlot']);
+                            emailRef.onValue.listen((DatabaseEvent event) {
+                              DataSnapshot snapshot = event.snapshot;
+                              setState(() {
+                                if (snapshot.value != null) {
+                                  Map<dynamic, dynamic>? emailList = snapshot.value as Map<dynamic, dynamic>?;
+                                  if (emailList != null) {
+                                    emailList.forEach((wait_email, value) async {
+                                      if (wait_email != requestsList[index]['emailId']) {
+                                        await emailRef.child(wait_email).child('Status').set("-1");
+                                      }
+                                    });
+                                  }
+                                }
+                              });
+                            });
+                            await bookingsRef.child(requestsList[index]['date']).child(requestsList[index]['roomName']).child(requestsList[index]['timeSlot']).set(1);
+                            await requestsRef.child(requestsList[index]['date']).child(requestsList[index]['roomName']).child(requestsList[index]['timeSlot']).child(encodeEmail(requestsList[index]['emailId'])).child('Status').set('0');
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        ElevatedButton(
+                          child: Text('Reject'),
+                          onPressed: () async {
+                            await requestsRef.child(requestsList[index]['date']).child(requestsList[index]['roomName']).child(requestsList[index]['timeSlot']).child(encodeEmail(requestsList[index]['emailId'])).child('Status').set('-1');
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),

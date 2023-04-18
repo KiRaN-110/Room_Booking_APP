@@ -165,19 +165,22 @@ class _BookingsState extends State<Bookings> {
                                 : Colors.red,
                           ),
                         ),
-                        ElevatedButton(
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0,
-                              color: Colors.white,
+                        Visibility(
+                          visible: requestsList[index]['status'] == 'Pending',
+                          child: ElevatedButton(
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0,
+                                color: Colors.white,
+                              ),
                             ),
+                            onPressed: () {
+                              // Add your logic for canceling the request here
+                            },
                           ),
-                          onPressed: () {
-
-                          },
-                        )
+                        ),
                       ],
                     ),
                   ],

@@ -80,6 +80,7 @@ class _ClassroomPageState extends State<ClassroomPage> {
       return;
     }
     final user_mail = FirebaseAuth.instance.currentUser!.email;
+    final user_name = FirebaseAuth.instance.currentUser!.displayName!;
     final date = DateFormat('dd/MM/yyyy').format(_selectedDate!);
     final day = DateFormat('EEEE').format(_selectedDate!);
     final enc_date = encodeDate(date);
@@ -101,7 +102,7 @@ class _ClassroomPageState extends State<ClassroomPage> {
               actions: [
                 TextButton(
                   onPressed: () async {
-                    await createRequest(context, _selectedDate!, widget.classroom.name, _selectedTimeSlot!, user_mail!);
+                    await createRequest(context, _selectedDate!, widget.classroom.name, _selectedTimeSlot!, user_mail!, user_name!);
                     // Navigator.of(context).pop();
                   },
                   child: Text('Request'),
@@ -291,7 +292,7 @@ String encodeDate (String date) {
   return enc_date;
 }
 
-Future<void> createRequest(BuildContext context, DateTime selectedDate, String roomName, String timeSlot, String email) async {
+Future<void> createRequest(BuildContext context, DateTime selectedDate, String roomName, String timeSlot, String email, String Name) async {
   final date = DateFormat('dd-MM-yyyy').format(selectedDate);
   final encoded_email = encodeEmail(email);
   // Check if a request already exists
@@ -317,8 +318,13 @@ Future<void> createRequest(BuildContext context, DateTime selectedDate, String r
     );
   } else {
     // Place the request
-    await requestsRef.child(date).child(roomName).child(timeSlot).child(encoded_email).set('1');
-
+    DateTime now = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch);
+    String formattedDate = DateFormat('dd-MM-yyyy HH:mm').format(now);
+    await requestsRef.child(date).child(roomName).child(timeSlot).child(encoded_email).set({
+     'Status' : '1',
+     'TimeStamp' : formattedDate,
+      'Name' : Name,
+    });
     // Show success message
     showDialog(
       context: context,
