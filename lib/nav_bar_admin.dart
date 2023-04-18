@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/requests.dart';
 import 'auth_service.dart';
 
 class NavBar_Admin extends StatelessWidget {
@@ -25,16 +24,7 @@ class NavBar_Admin extends StatelessWidget {
             ),
 
           ),
-          ListTile(
-            leading: Icon(Icons.chat_bubble),
-            title: Text('Booking and Cancellation Requests'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Requests()),
-              );
-            },
-          ),
+
           ListTile(
             leading: Icon(Icons.exit_to_app_rounded),
             title: Text('Log Out'),

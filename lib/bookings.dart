@@ -13,8 +13,9 @@ class Bookings extends StatefulWidget {
   _BookingsState createState() => _BookingsState();
 }
 
-class _BookingsState extends State<Bookings>{
-  List<Map<dynamic, dynamic>> requestsList = []; // List to store the fetched requests data
+class _BookingsState extends State<Bookings> {
+  List<Map<dynamic, dynamic>> requestsList = [
+  ]; // List to store the fetched requests data
 
   @override
   void initState() {
@@ -32,7 +33,8 @@ class _BookingsState extends State<Bookings>{
         requestsList = [];
         if (snapshot.value != null) {
           // Convert the fetched data into a list of maps and store it in requestsList
-          Map<dynamic, dynamic>? values = snapshot.value as Map<dynamic, dynamic>?;
+          Map<dynamic, dynamic>? values = snapshot.value as Map<dynamic,
+              dynamic>?;
           // print("The map values generated are : ${values}");
           if (values != null) {
             values.forEach((date, dateData) {
@@ -45,8 +47,9 @@ class _BookingsState extends State<Bookings>{
                       // Iterate through the email ids
                       if (emailId is Map<dynamic, dynamic>) {
                         emailId.forEach((email, value) {
-                          final user_mail = FirebaseAuth.instance.currentUser!.email;
-                          if (email == encodeEmail( user_mail!)) {
+                          final user_mail = FirebaseAuth.instance.currentUser!
+                              .email;
+                          if (email == encodeEmail(user_mail!)) {
                             if (value == '1') {
                               Map<String, dynamic> requestData = {
                                 'date': date,
@@ -90,14 +93,8 @@ class _BookingsState extends State<Bookings>{
   }
 
 
-
-
-
   @override
   Widget build(BuildContext context) {
-    // Check if requestsList is empty
-    // print('requestsList is empty: ${requestsList.isEmpty}');
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Requests"),
@@ -108,21 +105,83 @@ class _BookingsState extends State<Bookings>{
           itemCount: requestsList.length,
           itemBuilder: (context, index) {
             // Create a widget for each request item in the requestsList
-            return ListTile(
-              title: Text(requestsList[index]['date']),
-              subtitle: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            return Container(
+              margin: EdgeInsets.symmetric(vertical: 10.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 10.0,
+                  horizontal: 20.0,
+                ),
+                title: Text(
+                  requestsList[index]['date'],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10.0),
+                    Text(
+                      requestsList[index]['timeSlot'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    SizedBox(height: 5.0),
+                    Text(
+                      requestsList[index]['roomName'],
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                    SizedBox(height: 10.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(requestsList[index]['timeSlot']),
-                        Text(requestsList[index]['roomName']),
+                        Text(
+                          requestsList[index]['status'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0,
+                            color: requestsList[index]['status'] == 'Accepted'
+                                ? Colors.green
+                                : Colors.red,
+                          ),
+                        ),
+                        ElevatedButton(
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: () {
+
+                          },
+                        )
                       ],
                     ),
-                  ),
-                  Text(requestsList[index]['status']),
-                ],
+                  ],
+                ),
               ),
             );
           },
@@ -130,5 +189,6 @@ class _BookingsState extends State<Bookings>{
       ),
     );
   }
+
 
 }
