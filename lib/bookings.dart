@@ -50,28 +50,31 @@ class _BookingsState extends State<Bookings> {
                           final user_mail = FirebaseAuth.instance.currentUser!
                               .email;
                           if (email == encodeEmail(user_mail!)) {
-                            if (value == '1') {
+                            if (value['Status'] == '1') {
                               Map<String, dynamic> requestData = {
                                 'date': date,
                                 'roomName': roomName,
                                 'timeSlot': timeSlot,
+                                'emailId' : email,
                                 'status': 'Pending',
                               };
                               requestsList.add(requestData);
                             }
-                            else if (value == '0') {
+                            else if (value['Status'] == '0') {
                               Map<String, dynamic> requestData = {
                                 'date': date,
                                 'roomName': roomName,
                                 'timeSlot': timeSlot,
+                                'emailId' : email,
                                 'status': 'Accepted',
                               };
                               requestsList.add(requestData);
                             }
-                            else if (value == '-1') {
+                            else if (value['Status'] == '-1') {
                               Map<String, dynamic> requestData = {
                                 'date': date,
                                 'roomName': roomName,
+                                'emailId' : email,
                                 'timeSlot': timeSlot,
                                 'status': 'Rejected',
                               };
@@ -177,8 +180,32 @@ class _BookingsState extends State<Bookings> {
                               ),
                             ),
                             onPressed: () {
-                              // Add your logic for canceling the request here
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Cancel Request'),
+                                    content: Text('Are you sure you want to cancel this request?'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text('Yes'),
+                                        onPressed: () async {
+                                          await requestsRef.child(requestsList[index]['date']).child(requestsList[index]['roomName']).child(requestsList[index]['timeSlot']).child(encodeEmail(FirebaseAuth.instance.currentUser!.email!)).remove();
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: Text('No'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
+
                           ),
                         ),
                       ],
